@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     String
+  role         Role          @default(PASSENGER)
+  price        Float         @default(0)
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+enum Role {
+  PASSENGER
+  OFFICIAL
+  ADMIN
+}
+
+model Train {
+  train_id      Int           @id @default(autoincrement())
+  train_name    String
+  source        String
+  destination   String
+  date          DateTime
+  capacity      Int
+  ticket_price  Float
+  reservations  Reservation[]
+  createdAt     DateTime      @default(now())
+}
+
+model Reservation {
+  reservation_id Int      @id @default(autoincrement())
+  userId         String
+  train_id       Int
+  tickets        Int
+  total_price    Float
+  createdAt      DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  train Train @relation(fields: [train_id], references: [train_id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([train_id])
+}
