@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 type Train = {
   train_id: number;
@@ -116,11 +117,22 @@ export default function ManageTrains() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Manage Trains</h1>
+    <div className="mx-auto min-h-screen max-w-6xl p-6">
+      {/* Navbar */}
+      <div className="mb-6 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-zinc-900">
+        <h1 className="text-xl font-semibold">Manage Trains</h1>
+        <Link
+          href="/dashboard"
+          className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg"
+        >
+          Go to Dashboard
+        </Link>
+      </div>
+
+      {/* Create Train Button */}
+      <div className="mb-6 flex justify-end">
         <button
-          className="rounded bg-black px-4 py-2 text-white"
+          className="cursor-pointer rounded-lg bg-green-600 px-4 py-2 font-medium text-white shadow-md transition-all hover:bg-green-700 hover:shadow-lg"
           onClick={() => setIsModalOpen(true)}
           type="button"
         >
@@ -128,40 +140,40 @@ export default function ManageTrains() {
         </button>
       </div>
 
-      {error ? <p className="mb-4 rounded border border-red-300 bg-red-50 p-3 text-red-700">{error}</p> : null}
+      {error ? <p className="mb-4 rounded-lg border border-red-500/30 bg-red-900/20 p-3 text-red-400">{error}</p> : null}
 
       {loading ? (
-        <p>Loading trains...</p>
+        <p className="text-gray-400">Loading trains...</p>
       ) : sortedTrains.length === 0 ? (
-        <p>No trains found.</p>
+        <p className="text-gray-400">No trains found.</p>
       ) : (
-        <div className="overflow-x-auto rounded border">
-          <table className="min-w-full divide-y">
-            <thead className="bg-zinc-100">
+        <div className="overflow-x-auto rounded-xl border border-gray-700 shadow-lg">
+          <table className="min-w-full divide-y divide-gray-700">
+            <thead className="bg-zinc-900">
               <tr>
-                <th className="px-3 py-2 text-left text-sm font-medium">Name</th>
-                <th className="px-3 py-2 text-left text-sm font-medium">Source</th>
-                <th className="px-3 py-2 text-left text-sm font-medium">Destination</th>
-                <th className="px-3 py-2 text-left text-sm font-medium">Date</th>
-                <th className="px-3 py-2 text-left text-sm font-medium">Capacity</th>
-                <th className="px-3 py-2 text-left text-sm font-medium">Ticket Price</th>
-                <th className="px-3 py-2 text-left text-sm font-medium">Action</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Source</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Destination</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Date</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Capacity</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Ticket Price</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-700 bg-zinc-900/50">
               {sortedTrains.map((train) => (
-                <tr key={train.train_id} className="border-t">
-                  <td className="px-3 py-2">{train.train_name}</td>
-                  <td className="px-3 py-2">{train.source}</td>
-                  <td className="px-3 py-2">{train.destination}</td>
-                  <td className="px-3 py-2">{new Date(train.date).toLocaleString()}</td>
-                  <td className="px-3 py-2">{train.capacity}</td>
-                  <td className="px-3 py-2">{train.ticket_price}</td>
-                  <td className="px-3 py-2">
+                <tr key={train.train_id} className="transition-colors hover:bg-zinc-800/50">
+                  <td className="px-4 py-3 text-sm text-gray-300">{train.train_name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">{train.source}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">{train.destination}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">{new Date(train.date).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">{train.capacity}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">{train.ticket_price}</td>
+                  <td className="px-4 py-3">
                     <button
                       type="button"
                       onClick={() => handleDeleteTrain(train.train_id)}
-                      className="rounded bg-red-600 px-3 py-1 text-sm text-white"
+                      className="cursor-pointer rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg"
                     >
                       Delete
                     </button>
@@ -174,18 +186,18 @@ export default function ManageTrains() {
       )}
 
       {isModalOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded bg-white p-6 text-black">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-lg rounded-xl border border-gray-700 bg-zinc-900 p-6 text-white shadow-2xl">
             <h2 className="mb-4 text-xl font-semibold">Create New Train</h2>
 
-            <form className="space-y-3" onSubmit={handleCreateTrain}>
+            <form className="space-y-4" onSubmit={handleCreateTrain}>
               <input
                 required
                 type="text"
                 value={form.train_name}
                 onChange={(event) => setForm((prev) => ({ ...prev, train_name: event.target.value }))}
                 placeholder="Train name"
-                className="w-full rounded border p-2"
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               />
               <input
                 required
@@ -193,7 +205,7 @@ export default function ManageTrains() {
                 value={form.source}
                 onChange={(event) => setForm((prev) => ({ ...prev, source: event.target.value }))}
                 placeholder="Source"
-                className="w-full rounded border p-2"
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               />
               <input
                 required
@@ -201,14 +213,14 @@ export default function ManageTrains() {
                 value={form.destination}
                 onChange={(event) => setForm((prev) => ({ ...prev, destination: event.target.value }))}
                 placeholder="Destination"
-                className="w-full rounded border p-2"
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               />
               <input
                 required
                 type="datetime-local"
                 value={form.date}
                 onChange={(event) => setForm((prev) => ({ ...prev, date: event.target.value }))}
-                className="w-full rounded border p-2"
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               />
               <input
                 required
@@ -217,7 +229,7 @@ export default function ManageTrains() {
                 value={form.capacity}
                 onChange={(event) => setForm((prev) => ({ ...prev, capacity: event.target.value }))}
                 placeholder="Capacity"
-                className="w-full rounded border p-2"
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               />
               <input
                 required
@@ -227,13 +239,13 @@ export default function ManageTrains() {
                 value={form.ticket_price}
                 onChange={(event) => setForm((prev) => ({ ...prev, ticket_price: event.target.value }))}
                 placeholder="Ticket price"
-                className="w-full rounded border p-2"
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               />
 
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  className="rounded border px-4 py-2"
+                  className="cursor-pointer rounded-lg border border-gray-600 bg-gray-800 px-4 py-2 text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
                   onClick={() => {
                     setIsModalOpen(false);
                     setForm(initialForm);
@@ -244,7 +256,7 @@ export default function ManageTrains() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded bg-black px-4 py-2 text-white disabled:opacity-70"
+                  className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {submitting ? "Creating..." : "Create"}
                 </button>

@@ -126,29 +126,31 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
 
   return (
     <>
-      <div className="mb-4 flex flex-wrap items-center gap-2 rounded border p-3">
-        <Link className="rounded border px-3 py-2 text-sm" href="/reservation">
-          See Reservation
-        </Link>
-        {isAdmin ? (
-          <Link className="rounded border px-3 py-2 text-sm" href="/admin/manage-trains">
-            Manage Trains
+      <div className="mb-4 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-zinc-900">
+        <div className="flex items-center gap-3">
+          <Link className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg" href="/reservation">
+            See Reservation
           </Link>
-        ) : null}
+          {isAdmin ? (
+            <Link className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg" href="/admin/manage-trains">
+              Manage Trains
+            </Link>
+          ) : null}
+        </div>
         <button
           type="button"
-          className="rounded bg-black px-3 py-2 text-sm text-white"
+          className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg"
           onClick={() => void signOut({ callbackUrl: "/login" })}
         >
           Logout
         </button>
       </div>
 
-      <div className="mb-5 flex items-center justify-between rounded border p-4">
+      <div className="mb-5 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-zinc-900">
         <p className="font-medium">Your Money: {money}</p>
         <button
           type="button"
-          className="rounded bg-black px-4 py-2 text-white"
+          className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg"
           onClick={() => setIsMoneyModalOpen(true)}
         >
           Add Money
@@ -166,28 +168,28 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {sortedTrains.map((train) => (
-            <div key={train.train_id} className="rounded border p-4 shadow-sm">
+            <div key={train.train_id} className="group rounded-xl border border-gray-200 bg-white p-5 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-zinc-900">
               <h2 className="text-lg font-semibold">{train.train_name}</h2>
-              <p className="mt-2 text-sm">
-                <span className="font-medium">Route:</span> {train.source} to {train.destination}
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <span className="font-medium text-gray-900 dark:text-gray-100">Route:</span> {train.source} to {train.destination}
               </p>
-              <p className="mt-1 text-sm">
-                <span className="font-medium">Date:</span>{" "}
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <span className="font-medium text-gray-900 dark:text-gray-100">Date:</span>{" "}
                 {new Date(train.date).toLocaleString()}
               </p>
-              <p className="mt-1 text-sm">
-                <span className="font-medium">Capacity:</span> {train.capacity}
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <span className="font-medium text-gray-900 dark:text-gray-100">Capacity:</span> {train.capacity}
               </p>
-              <p className="mt-1 text-sm">
-                <span className="font-medium">Seats Left:</span> {train.seatsLeft}
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <span className="font-medium text-gray-900 dark:text-gray-100">Seats Left:</span> {train.seatsLeft}
               </p>
-              <p className="mt-1 text-sm">
-                <span className="font-medium">Ticket Price:</span> {train.ticket_price}
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <span className="font-medium text-gray-900 dark:text-gray-100">Ticket Price:</span> {train.ticket_price}
               </p>
 
               <button
                 type="button"
-                className="mt-4 rounded bg-black px-4 py-2 text-white"
+                className="mt-4 cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg disabled:cursor-not-allowed disabled:bg-gray-400"
                 onClick={() => {
                   setSelectedTrain(train);
                   setTicketCount("1");
@@ -202,28 +204,28 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
       )}
 
       {selectedTrain ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded bg-white p-6 text-black">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-xl border border-gray-700 bg-zinc-900 p-6 text-white shadow-2xl">
             <h3 className="text-xl font-semibold">Reserve Tickets</h3>
-            <p className="mt-2 text-sm text-zinc-700">{selectedTrain.train_name}</p>
+            <p className="mt-2 text-sm text-gray-400">{selectedTrain.train_name}</p>
 
-            <label className="mt-4 block text-sm font-medium">How many tickets do you want?</label>
+            <label className="mt-4 block text-sm font-medium text-gray-300">How many tickets do you want?</label>
             <input
-              className="mt-2 w-full rounded border p-2"
+              className="mt-2 w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               type="number"
               min={1}
               max={selectedTrain.seatsLeft}
               value={ticketCount}
               onChange={(event) => setTicketCount(event.target.value)}
             />
-            <p className="mt-2 text-sm text-zinc-600">
+            <p className="mt-2 text-sm text-gray-400">
               Available seats: {selectedTrain.seatsLeft}
             </p>
 
             <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
-                className="rounded border px-4 py-2"
+                className="cursor-pointer rounded-lg border border-gray-600 bg-gray-800 px-4 py-2 text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
                 onClick={() => setSelectedTrain(null)}
               >
                 Cancel
@@ -231,7 +233,7 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
               <button
                 type="button"
                 disabled={reserving}
-                className="rounded bg-black px-4 py-2 text-white"
+                className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
                 onClick={handleReserve}
               >
                 {reserving ? "Reserving..." : "Confirm"}
@@ -242,12 +244,12 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
       ) : null}
 
       {isMoneyModalOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded bg-white p-6 text-black">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-xl border border-gray-700 bg-zinc-900 p-6 text-white shadow-2xl">
             <h3 className="text-xl font-semibold">Add Money</h3>
-            <label className="mt-4 block text-sm font-medium">How much money do you want to add?</label>
+            <label className="mt-4 block text-sm font-medium text-gray-300">How much money do you want to add?</label>
             <input
-              className="mt-2 w-full rounded border p-2"
+              className="mt-2 w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               type="number"
               min={1}
               step="0.01"
@@ -258,7 +260,7 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
             <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
-                className="rounded border px-4 py-2"
+                className="cursor-pointer rounded-lg border border-gray-600 bg-gray-800 px-4 py-2 text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
                 onClick={() => {
                   setIsMoneyModalOpen(false);
                   setMoneyInput("");
@@ -269,7 +271,7 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
               <button
                 type="button"
                 disabled={addingMoney}
-                className="rounded bg-black px-4 py-2 text-white disabled:opacity-70"
+                className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
                 onClick={handleAddMoney}
               >
                 {addingMoney ? "Adding..." : "Add"}

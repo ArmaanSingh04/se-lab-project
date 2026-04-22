@@ -39,13 +39,16 @@ export default async function ReservationPage() {
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-6xl p-6">
-      <div className="mb-4 rounded border p-3">
-        <Link className="rounded border px-3 py-2 text-sm" href="/dashboard">
+      {/* Navbar */}
+      <div className="mb-6 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-zinc-900">
+        <h1 className="text-xl font-semibold">Manage Reservations</h1>
+        <Link
+          href="/dashboard"
+          className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg"
+        >
           Go to Dashboard
         </Link>
       </div>
-      <h1 className="mb-2 text-2xl font-semibold">Manage Reservations</h1>
-      {/* <p className="mb-6 text-sm text-zinc-600">Current balance: {user.price}</p> */}
       <ReservationsList
         initialMoney={user.price}
         reservations={reservations.map((reservation) => ({
