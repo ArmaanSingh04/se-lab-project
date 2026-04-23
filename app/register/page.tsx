@@ -57,3 +57,6 @@ export default async function RegisterPage() {
     </div>
   );
 }
+
+
+export const dynamic = "force-dynamic";

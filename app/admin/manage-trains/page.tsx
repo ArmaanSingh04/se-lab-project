@@ -268,3 +268,5 @@ export default function ManageTrains() {
     </div>
   );
 }
+
+export const dynamic = "force-dynamic";
