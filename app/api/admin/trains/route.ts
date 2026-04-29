@@ -1,9 +1,9 @@
 import { authOptions } from "@/auth";
 import prisma from "@/db";
-import { getServerSession } from "next-auth";
+import { getServerSession, Session } from "next-auth";
 import { NextResponse } from "next/server";
 
-function ensureAdmin(session: Awaited<ReturnType<typeof getServerSession>>) {
+function ensureAdmin(session: Session | null) {
   return session?.user?.email && session.user.role === "ADMIN";
 }
 
