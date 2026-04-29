@@ -29,6 +29,13 @@ export default function ManageTrains() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState(initialForm);
+  const [editTrainId, setEditTrainId] = useState<number | null>(null);
+
+  const minDateTime = useMemo(() => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  }, []);
 
   const sortedTrains = useMemo(
     () => [...trains].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
@@ -62,14 +69,17 @@ export default function ManageTrains() {
     void loadTrains();
   }, []);
 
-  const handleCreateTrain = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmitTrain = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitting(true);
     setError("");
 
     try {
-      const response = await fetch("/api/admin/trains", {
-        method: "POST",
+      const url = editTrainId ? `/api/admin/trains/${editTrainId}` : "/api/admin/trains";
+      const method = editTrainId ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
@@ -82,17 +92,40 @@ export default function ManageTrains() {
       const result = (await response.json()) as Train | { message?: string };
 
       if (!response.ok) {
-        throw new Error("message" in result && result.message ? result.message : "Create failed.");
+        throw new Error("message" in result && result.message ? result.message : "Operation failed.");
       }
 
-      setTrains((prev) => [...prev, result as Train]);
+      if (editTrainId) {
+        setTrains((prev) => prev.map((t) => (t.train_id === editTrainId ? (result as Train) : t)));
+      } else {
+        setTrains((prev) => [...prev, result as Train]);
+      }
+      
       setForm(initialForm);
+      setEditTrainId(null);
       setIsModalOpen(false);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Could not create train.");
+      setError(submitError instanceof Error ? submitError.message : "Could not save train.");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEditClick = (train: Train) => {
+    const tDate = new Date(train.date);
+    const tzOffset = tDate.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(tDate.getTime() - tzOffset).toISOString().slice(0, 16);
+
+    setForm({
+      train_name: train.train_name,
+      source: train.source,
+      destination: train.destination,
+      date: localISOTime,
+      capacity: train.capacity.toString(),
+      ticket_price: train.ticket_price.toString(),
+    });
+    setEditTrainId(train.train_id);
+    setIsModalOpen(true);
   };
 
   const handleDeleteTrain = async (trainId: number) => {
@@ -170,13 +203,22 @@ export default function ManageTrains() {
                   <td className="px-4 py-3 text-sm text-gray-400">{train.capacity}</td>
                   <td className="px-4 py-3 text-sm text-gray-400">{train.ticket_price}</td>
                   <td className="px-4 py-3">
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteTrain(train.train_id)}
-                      className="cursor-pointer rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleEditClick(train)}
+                        className="cursor-pointer rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white shadow-md transition-all hover:bg-green-700 hover:shadow-lg"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTrain(train.train_id)}
+                        className="cursor-pointer rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -188,9 +230,9 @@ export default function ManageTrains() {
       {isModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-lg rounded-xl border border-gray-700 bg-zinc-900 p-6 text-white shadow-2xl">
-            <h2 className="mb-4 text-xl font-semibold">Create New Train</h2>
+            <h2 className="mb-4 text-xl font-semibold">{editTrainId ? "Edit Train" : "Create New Train"}</h2>
 
-            <form className="space-y-4" onSubmit={handleCreateTrain}>
+            <form className="space-y-4" onSubmit={handleSubmitTrain}>
               <input
                 required
                 type="text"
@@ -219,6 +261,7 @@ export default function ManageTrains() {
                 required
                 type="datetime-local"
                 value={form.date}
+                min={minDateTime}
                 onChange={(event) => setForm((prev) => ({ ...prev, date: event.target.value }))}
                 className="w-full rounded-lg border border-gray-600 bg-gray-800 p-3 text-white placeholder-gray-500 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe]"
               />
@@ -249,6 +292,7 @@ export default function ManageTrains() {
                   onClick={() => {
                     setIsModalOpen(false);
                     setForm(initialForm);
+                    setEditTrainId(null);
                   }}
                 >
                   Cancel
@@ -258,7 +302,7 @@ export default function ManageTrains() {
                   disabled={submitting}
                   className="cursor-pointer rounded-lg bg-[#055ffe] px-4 py-2 font-medium text-white shadow-md transition-all hover:bg-[#044fd1] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {submitting ? "Creating..." : "Create"}
+                  {submitting ? "Saving..." : (editTrainId ? "Update" : "Create")}
                 </button>
               </div>
             </form>

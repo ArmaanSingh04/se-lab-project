@@ -31,9 +31,46 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
   const [moneyInput, setMoneyInput] = useState("");
   const [addingMoney, setAddingMoney] = useState(false);
 
+  const [filterSource, setFilterSource] = useState("");
+  const [filterDestination, setFilterDestination] = useState("");
+  const [filterDate, setFilterDate] = useState("");
+
+  const minDateStr = useMemo(() => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().split("T")[0];
+  }, []);
+
   const sortedTrains = useMemo(
-    () => [...trains].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-    [trains]
+    () => {
+      const now = new Date();
+      let filtered = trains.filter((t) => new Date(t.date) >= now);
+      if (filterSource) {
+        filtered = filtered.filter((t) =>
+          t.source.toLowerCase().includes(filterSource.toLowerCase())
+        );
+      }
+      if (filterDestination) {
+        filtered = filtered.filter((t) =>
+          t.destination.toLowerCase().includes(filterDestination.toLowerCase())
+        );
+      }
+      if (filterDate) {
+        filtered = filtered.filter((t) => {
+          if (t.date.startsWith(filterDate)) return true;
+          const tDate = new Date(t.date);
+          if (isNaN(tDate.getTime())) return false;
+          const year = tDate.getFullYear();
+          const month = String(tDate.getMonth() + 1).padStart(2, "0");
+          const day = String(tDate.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}` === filterDate;
+        });
+      }
+      return [...filtered].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+    },
+    [trains, filterSource, filterDestination, filterDate]
   );
 
   const handleReserve = async () => {
@@ -155,6 +192,39 @@ export default function DashboardTrains({ trains, userMoney, isAdmin }: Dashboar
         >
           Add Money
         </button>
+      </div>
+
+      <div className="mb-5 grid grid-cols-1 gap-4 md:grid-cols-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-zinc-900">
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Source</label>
+          <input
+            type="text"
+            placeholder="Filter by source..."
+            className="w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-gray-900 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe] dark:border-gray-700 dark:bg-zinc-800 dark:text-white"
+            value={filterSource}
+            onChange={(e) => setFilterSource(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Destination</label>
+          <input
+            type="text"
+            placeholder="Filter by destination..."
+            className="w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-gray-900 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe] dark:border-gray-700 dark:bg-zinc-800 dark:text-white"
+            value={filterDestination}
+            onChange={(e) => setFilterDestination(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
+          <input
+            type="date"
+            min={minDateStr}
+            className="w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-gray-900 focus:border-[#055ffe] focus:outline-none focus:ring-1 focus:ring-[#055ffe] dark:border-gray-700 dark:bg-zinc-800 dark:text-white"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+          />
+        </div>
       </div>
 
       {message ? (
