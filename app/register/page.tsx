@@ -59,4 +59,4 @@ export default async function RegisterPage() {
 }
 
 
-export const dynamic = "force-dynamic";
+export const revalidate = 0;

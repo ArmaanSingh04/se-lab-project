@@ -17,4 +17,4 @@ export default async function LoginPage() {
   );
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 0;
